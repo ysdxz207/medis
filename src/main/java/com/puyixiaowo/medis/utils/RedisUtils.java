@@ -52,16 +52,16 @@ public class RedisUtils {
     }
 
     public static void testConnection() {
-        getJedis().set("TEST_CONNECTION", "connected");
-        getJedis().del("TEST_CONNECTION");
+        getJedis(0).set("TEST_CONNECTION", "connected");
+        getJedis(0).del("TEST_CONNECTION");
     }
 
 
-    private static Jedis getJedis() {
+    private static Jedis getJedis(int dbIndex) {
         Jedis jedis = null;
         try {
             jedis = jedisPool.getResource();
-            jedis.select(1);
+            jedis.select(dbIndex);
         } catch (Exception e) {
             if (e.getCause() instanceof JedisDataException) {
 
@@ -80,52 +80,50 @@ public class RedisUtils {
         return jedis;
     }
 
-    public static String get(String key) {
-        return getJedis().get(key);
+    public static String get(int dbIndex, String key) {
+        return getJedis(dbIndex).get(key);
     }
 
-    public static <T> T get(String key, Class<T> clazz) {
-        String str = get(key);
+    public static <T> T get(int dbIndex, String key, Class<T> clazz) {
+        String str = get(dbIndex, key);
         if (StringUtils.isBlank(str)) {
             return null;
         }
         return JSONObject.parseObject(str, clazz);
     }
 
-    public static void set(String key, String value) {
-        getJedis().set(key, value);
+    public static void set(int dbIndex, String key, String value) {
+        getJedis(dbIndex).set(key, value);
     }
 
-    public static long delete(String... keys) {
+    public static long delete(int dbIndex, String... keys) {
         boolean pattern = JSON.toJSONString(keys).indexOf("*") != -1;
         long num = 0;
         if (pattern) {
             for (String key :
                     keys) {
-                num += delete(key);
+                num += delete(dbIndex, key);
             }
             return num;
         }
-        return getJedis().del(keys);
+        return getJedis(dbIndex).del(keys);
     }
 
-    public static Long delete(String pattern) {
+    public static Long delete(int dbIndex, String pattern) {
         Set<String> keysSet = RedisUtils.keys(0, pattern);
         String[] keys = keysSet.toArray(new String[keysSet.size()]);
         if (keys.length == 0) {
             return 0L;
         }
-        return RedisUtils.delete(keys);
+        return RedisUtils.delete(dbIndex, keys);
     }
 
     public static Set<String> keys(int dbIndex, String pattern) {
-        Jedis jedis = getJedis();
-        jedis.select(dbIndex);
-        return jedis.keys(pattern);
+        return getJedis(dbIndex).keys(pattern);
     }
 
-    public static <T> T getDefault(String key, Class<T> clazz, T defaultValue) {
-        String str = getJedis().get(key);
+    public static <T> T getDefault(int dbIndex, String key, Class<T> clazz, T defaultValue) {
+        String str = getJedis(dbIndex).get(key);
         if (StringUtils.isBlank(str)) {
             return defaultValue;
         }
@@ -134,7 +132,7 @@ public class RedisUtils {
 
 
     public static JSONArray count() {
-        String [] keyspaceArr = getJedis().info("keyspace").split("(\\r\\n)|(\\n)");
+        String [] keyspaceArr = getJedis(0).info("keyspace").split("(\\r\\n)|(\\n)");
 
         JSONArray arr = new JSONArray();
 
@@ -171,10 +169,6 @@ public class RedisUtils {
             }
         }
         return 0;
-    }
-
-    public static String selectDB(int dbIndex){
-        return getJedis().select(dbIndex);
     }
 
     public static JSONArray dbList() {

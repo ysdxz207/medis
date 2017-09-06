@@ -20,6 +20,8 @@ public class Routes {
         path("/redis", () -> {
             get("/keys", ((request, response) -> IndexController.redisKeys(request, response)));
             get("/get", ((request, response) -> IndexController.redisGet(request, response)));
+            get("/delete", ((request, response) -> IndexController.redisDelete(request, response)));
+            get("/edit", ((request, response) -> IndexController.editDelete(request, response)));
         });
     }
 }

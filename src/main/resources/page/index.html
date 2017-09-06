@@ -19,78 +19,79 @@
     <script type="text/javascript" src="${base}/lib/jquery-3.1.1.min.js"></script>
     <script type="text/javascript" src="${base}/lib/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="${base}/lib/bootstrap3-typeahead.min.js"></script>
+    <script type="text/javascript" src="${base}/lib/bootstrap-alert.js"></script>
 
 </head>
 
 <body>
+<input type="hidden" id="base" value="${base}">
 
-<div class="row">
-
-    <div class="col-md-4">
-        <div class="input-group">
-            <span class="input-group-addon">选择数据库</span>
-            <select class="form-control" id="select_db">
-                <#list 0..14 as i>
-                    <#assign dbname = "db${i}!">
-                    <#if (((countList)??) && (((countList)?size) > 0))>
-                        <#list countList as count>
-                            <#if dbname == count.name>
-                                <option value="${i}">db${i}   key数量:${(count.count?c)!}</option>
-                            <#else>
-                                <option value="${i}">db${i}</option>
-                            </#if>
-                        </#list>
-                    </#if>
-                </#list>
-
-            </select>
+<div class="container">
+    <div class="center-block col-md-12">
+        <div class="col-md-12 form-group form-inline">
+            <div class="input-group col-md-3">
+                <span class="input-group-addon">host</span>
+                <input type="text" class="form-control">
+            </div>
+            <div class="input-group col-md-2">
+                <span class="input-group-addon">port</span>
+                <input type="text" class="form-control">
+            </div>
+            <div class="input-group col-md-3">
+                <span class="input-group-addon">auth</span>
+                <input type="text" class="form-control">
+            </div>
+            <div class="input-group col-md-1">
+                <input type="button" class="btn btn-warning" value="保存配置">
+            </div>
+            <div class="input-group col-md-2 pull-right">
+                <select class="form-control" >
+                    <option value="">选择配置</option>
+                </select>
+            </div>
         </div>
-        <div class="input-group">
-            <input type="text" class="form-control" id="select_key" data-provide="typeahead" placeholder="">
-            <div class="input-group-addon btn btn-default">提交</div>
+        <div class="col-md-4 form-group">
+            <div class="input-group">
+                <span class="input-group-addon">选择数据库</span>
+                <select class="form-control" id="select_db">
+                    <#list 0..14 as i>
+                        <#assign dbname = "db${i}">
+                            <#if (((countList)??) && (((countList)?size) > 0))>
+                                <#list countList as count>
+                                    <#if dbname == count.name>
+                                        <option value="${i}">db${i}&nbsp;&nbsp;&nbsp;&nbsp;key数量:${(count.count?c)!}
+                                        </option>
+                                        <#else>
+                                            <option value="${i}">db${i}</option>
+                                    </#if>
+                                </#list>
+                            </#if>
+                    </#list>
+
+                </select>
+            </div>
+            <div class="input-group">
+                <input type="text" class="form-control" id="select_key" data-provide="typeahead" placeholder="key,支持*匹配">
+                <div class="input-group-addon btn btn-default" id="btn_submit">提交</div>
+            </div>
+
+            <div>
+                <ul class="list-unstyled" id="list_key"></ul>
+            </div>
+        </div>
+        <div class="col-md-8 form-group">
+            <div class="input-group">
+                <input id="input_key" class="form-control">
+                <span class="input-group-addon btn btn-danger" id="btn_del">删除</span>
+            </div>
+            <div class="input-group">
+                <textarea id="text_value" rows="20" class="form-control"></textarea>
+                <span class="input-group-addon btn btn-success" id="btn_edit">修改</span>
+            </div>
         </div>
     </div>
-    <div class="col-md-8"></div>
 </div>
-
-<#if (((countList)??) && (((countList)?size) > 0))>
-    <#list countList as count>
-        [${count.name!}]key数量：${(count.count?c)!0};
-    </#list>
-</#if>
 </body>
 
-<script type="text/javascript">
-    $(function () {
-        var $select = $("#select_key");
-
-        $.get("${base}/tag/tags", function (data) {
-
-            $select.typeahead({
-                source: data,
-                showHintOnFocus: true,
-                displayText: function (item) {
-                    return item.name + "&nbsp;&nbsp;" + item.value;
-                },
-                afterSelect: function (item) {
-                    $select.val(item.value);
-                    keys(item.value);
-                }
-
-            });
-        }, 'json');
-
-
-        function keys(key) {
-            var db = $('#select_db').val();
-            $.get("${base}/redis/keys", {
-                db: db,
-                key: key
-            }, function (data) {
-
-                console.log(data);
-            }, 'json');
-        }
-    });
-</script>
+<script type="text/javascript" src="${base}/js/index.js"></script>
 </html>

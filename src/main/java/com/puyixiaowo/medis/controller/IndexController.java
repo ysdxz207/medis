@@ -56,7 +56,8 @@ public class IndexController {
      * @return
      */
     public static String redisGet(Request request, Response response) {
-        return RedisUtils.get(request.queryParams("key"));
+        return RedisUtils.get(Integer.valueOf(request.queryParams("db")),
+                request.queryParams("key"));
     }
 
     /**
@@ -71,5 +72,22 @@ public class IndexController {
         return JSON.toJSONString(RedisUtils
                 .keys(Integer.parseInt(request.queryParams("db")),
                         request.queryParams("key")));
+    }
+
+    public static Object redisDelete(Request request, Response response) {
+        return RedisUtils.delete(Integer.valueOf(request.queryParams("db")),
+                request.queryParams("key"));
+    }
+
+    public static Object editDelete(Request request, Response response) {
+        boolean success = false;
+        try {
+            RedisUtils.set(Integer.valueOf(request.queryParams("db")),
+                    request.queryParams("key"),
+                    request.queryParams("value"));
+        } catch (Exception e) {
+            success = false;
+        }
+        return success;
     }
 }

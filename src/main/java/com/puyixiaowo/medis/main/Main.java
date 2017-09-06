@@ -14,7 +14,7 @@ import static spark.Spark.port;
 public class Main {
     /**
      * 支持启动设置端口：java -jar medis-1.0.jar -p 1521,
-     * 默认启动端口8003
+     * 默认启动端口8004
      * @param args
      */
     public static void main(String[] args) {
