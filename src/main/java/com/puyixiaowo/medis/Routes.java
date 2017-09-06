@@ -10,5 +10,16 @@ public class Routes {
         Spark.staticFileLocation("static");
 
         get("/", ((request, response) -> IndexController.index(request, response)));
+
+
+        path("/tag", () -> {
+            get("/tags", ((request, response) -> IndexController.tags(request, response)));
+        });
+
+
+        path("/redis", () -> {
+            get("/keys", ((request, response) -> IndexController.redisKeys(request, response)));
+            get("/get", ((request, response) -> IndexController.redisGet(request, response)));
+        });
     }
 }

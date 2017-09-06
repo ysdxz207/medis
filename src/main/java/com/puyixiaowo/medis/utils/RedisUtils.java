@@ -110,7 +110,7 @@ public class RedisUtils {
     }
 
     public static Long delete(String pattern) {
-        Set<String> keysSet = RedisUtils.keys(pattern);
+        Set<String> keysSet = RedisUtils.keys(0, pattern);
         String[] keys = keysSet.toArray(new String[keysSet.size()]);
         if (keys.length == 0) {
             return 0L;
@@ -118,8 +118,10 @@ public class RedisUtils {
         return RedisUtils.delete(keys);
     }
 
-    public static Set<String> keys(String pattern) {
-        return getJedis().keys(pattern);
+    public static Set<String> keys(int dbIndex, String pattern) {
+        Jedis jedis = getJedis();
+        jedis.select(dbIndex);
+        return jedis.keys(pattern);
     }
 
     public static <T> T getDefault(String key, Class<T> clazz, T defaultValue) {
@@ -169,5 +171,13 @@ public class RedisUtils {
             }
         }
         return 0;
+    }
+
+    public static String selectDB(int dbIndex){
+        return getJedis().select(dbIndex);
+    }
+
+    public static JSONArray dbList() {
+        return null;
     }
 }

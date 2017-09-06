@@ -8,17 +8,50 @@
     <meta name="Keywords" content=",redis"/>
     <meta name="Description" content="medis"/>
     <!-- bootstrap - css -->
-    <link href="/css/bootstrap.css" rel="stylesheet">
+    <link href="${base}/lib/bootstrap/css/bootstrap.css" rel="stylesheet">
     <!-- core - css -->
-    <link href="/css/style.css" rel="stylesheet">
+    <link href="${base}/css/style.css" rel="stylesheet">
 
     <!-- Favicons -->
     <link rel="apple-touch-icon-precomposed" href="/assets/ico/apple-touch-icon-precomposed.png">
     <link rel="shortcut icon" href="/assets/ico/favicon.png">
 
+    <script type="text/javascript" src="${base}/lib/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="${base}/lib/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="${base}/lib/bootstrap3-typeahead.min.js"></script>
+
 </head>
 
 <body>
+
+<div class="row">
+
+    <div class="col-md-4">
+        <div class="input-group">
+            <span class="input-group-addon">选择数据库</span>
+            <select class="form-control" id="select_db">
+                <#list 0..14 as i>
+                    <#assign dbname = "db${i}!">
+                    <#if (((countList)??) && (((countList)?size) > 0))>
+                        <#list countList as count>
+                            <#if dbname == count.name>
+                                <option value="${i}">db${i}   key数量:${(count.count?c)!}</option>
+                            <#else>
+                                <option value="${i}">db${i}</option>
+                            </#if>
+                        </#list>
+                    </#if>
+                </#list>
+
+            </select>
+        </div>
+        <div class="input-group">
+            <input type="text" class="form-control" id="select_key" data-provide="typeahead" placeholder="">
+            <div class="input-group-addon btn btn-default">提交</div>
+        </div>
+    </div>
+    <div class="col-md-8"></div>
+</div>
 
 <#if (((countList)??) && (((countList)?size) > 0))>
     <#list countList as count>
@@ -26,4 +59,38 @@
     </#list>
 </#if>
 </body>
+
+<script type="text/javascript">
+    $(function () {
+        var $select = $("#select_key");
+
+        $.get("${base}/tag/tags", function (data) {
+
+            $select.typeahead({
+                source: data,
+                showHintOnFocus: true,
+                displayText: function (item) {
+                    return item.name + "&nbsp;&nbsp;" + item.value;
+                },
+                afterSelect: function (item) {
+                    $select.val(item.value);
+                    keys(item.value);
+                }
+
+            });
+        }, 'json');
+
+
+        function keys(key) {
+            var db = $('#select_db').val();
+            $.get("${base}/redis/keys", {
+                db: db,
+                key: key
+            }, function (data) {
+
+                console.log(data);
+            }, 'json');
+        }
+    });
+</script>
 </html>
