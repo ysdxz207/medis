@@ -1,0 +1,33 @@
+<div class="bjui-pageContent">
+    <table class="table table-bordered" id="datagrid_article_list_filter" data-toggle="datagrid" data-options="{
+        height: '100%',
+        gridTitle : '分类列表',
+        showToolbar: true,
+        toolbarItem: 'add,save,cancel,edit,del',
+        loadType: 'GET',
+        dataUrl: '${base}/admin/category/true',
+        dataType: 'json',
+        editUrl: '${base}/admin/category/edit/false',
+        delType: 'POST',
+        delUrl: '${base}/admin/category/delete',
+        delPK: 'id',
+        local: 'remote',
+        filterAll: true,
+        paging: {pageSize: 20,selectPageSize:'20,40,100'},
+        showCheckboxcol: true,
+        linenumberAll: true,
+        afterSave: function($trs, datas) {
+        	BJUI.navtab('refresh');
+        },
+        afterDelete: function($trs, datas) {
+            BJUI.navtab('refresh');
+        }
+    }">
+        <thead>
+            <tr>
+                <th data-options="{name:'id',align:'center',quickfilter:false,width: 200,add:false,edit:false}">ID</th>
+                <th data-options="{name:'name',align:'center',width: 120}">分类名</th>
+            </tr>
+        </thead>
+    </table>
+</div>

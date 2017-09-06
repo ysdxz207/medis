@@ -1,0 +1,51 @@
+<div class="bjui-pageContent">
+<form action="${base}/admin/article/edit/true" class="datagrid-edit-form" data-toggle="validate" data-data-type="jsonp">
+    
+    <input type="hidden" name="id" value="${(model.id?c)!}"/>
+
+    <div class="bjui-row col-2">
+        <label class="row-label">标题</label>
+        <div class="row-input required">
+            <input type="text" name="title" value="${(model.title)!}" data-rule="required" >
+        </div>
+        <br>
+
+        <label class="row-label">分类</label>
+        <div class="row-input required">
+            <select name="categoryId" data-toggle="selectpicker" data-rule="required">
+                <option value="">请选择</option>
+                <#list categoryList as category>
+                    <option value="${(category.id?c)!}" ${(((model.categoryId?c)?? && model.categoryId?c == category.id?c))?string('selected','')}>${(category.name)!}</option>
+                </#list>
+            </select>
+        </div>
+        <br>
+
+        <label class="row-label">标签</label>
+        <div class="row-input required">
+            <input type="text" name="tags" value="" data-toggle="tags" data-url="${base}/admin/tag/top/array" data-width="100%" size="20" placeholder="输入关键字，回车提交">
+        </div>
+        <br>
+
+        <label class="row-label">内容</label>
+        <div class="row-input required">
+            <textarea name="context" id="article_edit_form_content" class="j-content" style="width: 800px;" data-toggle="kindeditor" data-minheight="200">${(model.context)!}</textarea>
+        </div>
+        <br>
+        <label class="row-label">发布状态</label>
+        <div class="row-input required">
+            <select name="status" data-toggle="selectpicker" data-rule="required" data-width="100%">
+                <option value="">请选择</option>
+                <option value="1" ${(((model.status)??) && (model.status == 1))?string('selected', '') }>发布</option>
+                <option value="0" ${(((model.status)??) && (model.status == 0))?string('selected', '') }>不发布</option>
+            </select>
+        </div>
+    </div>
+</form>
+</div>
+<div class="bjui-pageFooter">
+    <ul>
+        <li><button type="button" class="btn-close" data-icon="close">取消</button></li>
+        <li><button type="submit" class="btn-default" data-icon="save">发布</button></li>
+    </ul>
+</div>
