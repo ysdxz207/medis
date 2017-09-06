@@ -1,6 +1,7 @@
 package com.puyixiaowo.medis.utils;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.puyixiaowo.medis.exception.JedisConfigException;
 import redis.clients.jedis.Jedis;
@@ -9,6 +10,8 @@ import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.jedis.exceptions.JedisDataException;
 
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -58,6 +61,7 @@ public class RedisUtils {
         Jedis jedis = null;
         try {
             jedis = jedisPool.getResource();
+            jedis.select(1);
         } catch (Exception e) {
             if (e.getCause() instanceof JedisDataException) {
 
@@ -124,5 +128,46 @@ public class RedisUtils {
             return defaultValue;
         }
         return JSONObject.parseObject(str, clazz);
+    }
+
+
+    public static JSONArray count() {
+        String [] keyspaceArr = getJedis().info("keyspace").split("(\\r\\n)|(\\n)");
+
+        JSONArray arr = new JSONArray();
+
+        for (String keyspace :
+                keyspaceArr) {
+            if (keyspace.indexOf("keyspace") == -1) {
+                String[] keyspaceInfo = keyspace.split(",");
+                for (String keyInfo :
+                        keyspaceInfo) {
+                    if (keyInfo.indexOf("keys") != -1) {
+                        JSONObject json = new JSONObject();
+                        String dbname = keyInfo.substring(0, keyInfo.indexOf(":"));
+                        String keyCount = keyInfo.substring(keyInfo.indexOf("=") + 1);
+                        json.put("name", dbname);
+                        json.put("count", keyCount);
+                        arr.add(json);
+                    }
+                }
+            }
+        }
+
+        return arr;
+    }
+
+    public static int count(String dbIndex) {
+        JSONArray arr = count();
+        Iterator<Object> it = arr.iterator();
+
+        while (it.hasNext()) {
+            Object obj = it.next();
+            if (obj instanceof JSONObject
+                    && ((JSONObject) obj).getString("name").equals(dbIndex)) {
+                return ((JSONObject) obj).getIntValue("count");
+            }
+        }
+        return 0;
     }
 }

@@ -1,7 +1,7 @@
 package com.puyixiaowo.medis.utils;
 
 import com.alibaba.fastjson.JSON;
-import com.puyixiaowo.medis.bean.sys.AppConfigBean;
+import com.puyixiaowo.medis.bean.AppConfigBean;
 import com.puyixiaowo.medis.enums.EnumAppConfig;
 
 import java.util.Arrays;

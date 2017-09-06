@@ -1,10 +1,7 @@
 package com.puyixiaowo.medis.main;
 
-import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.puyixiaowo.medis.Routes;
-import com.puyixiaowo.medis.bean.sys.AppConfigBean;
-import com.puyixiaowo.medis.error.ErrorHandler;
-import com.puyixiaowo.medis.generator.utils.CustomIdSerializer;
+import com.puyixiaowo.medis.bean.AppConfigBean;
 import com.puyixiaowo.medis.utils.AppUtils;
 import com.puyixiaowo.medis.utils.ConfigUtils;
 
@@ -16,7 +13,7 @@ import static spark.Spark.port;
  */
 public class Main {
     /**
-     * 支持启动设置端口：java -jar f-blog-1.0.jar -p 1521,
+     * 支持启动设置端口：java -jar medis-1.0.jar -p 1521,
      * 默认启动端口8003
      * @param args
      */
@@ -27,10 +24,7 @@ public class Main {
 
         ConfigUtils.init();
 
-        ErrorHandler.handleErrors();
         Routes.init();
 
-        //ID序列化为字符串类型
-        SerializeConfig.getGlobalInstance().put(Long.class, new CustomIdSerializer());
     }
 }
