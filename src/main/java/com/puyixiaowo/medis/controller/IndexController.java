@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.puyixiaowo.medis.bean.RedisCountBean;
 import com.puyixiaowo.medis.freemarker.FreeMarkerTemplateEngine;
-import com.puyixiaowo.medis.utils.FileUtils;
+import com.puyixiaowo.medis.utils.ConfigUtils;
 import com.puyixiaowo.medis.utils.RedisUtils;
 import spark.ModelAndView;
 import spark.Request;
@@ -15,8 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class IndexController {
-
-    private static final String REDIS_CONF = "conf/redis.json";
 
     /**
      * 首页
@@ -29,7 +27,7 @@ public class IndexController {
         Map<String, Object> model = new HashMap<>();
 
         //读取配置
-        model.put("confList", JSON.parseArray(FileUtils.readResourceFile(REDIS_CONF)));
+        model.put("confList", ConfigUtils.readRedisConf());
 
         return new FreeMarkerTemplateEngine()
                 .render(new ModelAndView(model,
@@ -45,7 +43,7 @@ public class IndexController {
      */
     public static String tags(Request request, Response response) {
 
-        return FileUtils.readResourceFile("tag/tags.json");
+        return ConfigUtils.readTags();
     }
 
 
@@ -102,13 +100,14 @@ public class IndexController {
         jsonObject.put("host", host);
         jsonObject.put("port", port);
         jsonObject.put("pass", pass);
-        JSONArray conf = JSON.parseArray(FileUtils.readResourceFile("conf/redis.json"));
+        JSONArray conf = ConfigUtils.readRedisConf();
 
         if (!conf.contains(jsonObject)) {
             conf.add(jsonObject);
         }
 
-        FileUtils.writeResourceFile(REDIS_CONF, conf.toJSONString());
+        ConfigUtils.saveRedisConf(conf.toJSONString());
+
         RedisUtils.init(request.queryParams("host"),
                 Integer.valueOf(request.queryParams("port")),
                 request.queryParams("pass"));
@@ -126,11 +125,11 @@ public class IndexController {
         jsonObject.put("pass", pass);
 
 
-        JSONArray conf = JSON.parseArray(FileUtils.readResourceFile(REDIS_CONF));
+        JSONArray conf = ConfigUtils.readRedisConf();
         boolean flag = conf.remove(jsonObject);
 
         try {
-            FileUtils.writeResourceFile(REDIS_CONF, conf.toJSONString());
+            ConfigUtils.saveRedisConf(conf.toJSONString());
             if (flag) {
                 return true;
             }

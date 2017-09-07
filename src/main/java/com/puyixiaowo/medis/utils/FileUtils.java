@@ -38,20 +38,28 @@ public class FileUtils {
         return tempFile;
     }
 
-    public static void writeResourceFile(String filePath, String text) {
-        PrintWriter writer = null;
-        try {
-            writer =
-                    new PrintWriter(
-                            new File(FileUtils.class.getClassLoader().getResource(filePath).getPath()));
 
-            writer.write(text);
+    public static void writeFile(String filePath, String text) {
+        try {
+            org.apache.commons.io.FileUtils.write(new File(filePath), text);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String readFile(String filePath) {
+        LineIterator it = null;
+        StringBuilder sb = new StringBuilder();
+        try {
+            it = org.apache.commons.io.FileUtils.lineIterator(new File(filePath), "UTF-8");
+            while (it.hasNext()) {
+                sb.append(it.nextLine() + "\n");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (writer != null) {
-                writer.close();
-            }
+            LineIterator.closeQuietly(it);
         }
+        return sb.toString();
     }
 }

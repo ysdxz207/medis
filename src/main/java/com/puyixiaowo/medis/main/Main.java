@@ -3,6 +3,7 @@ package com.puyixiaowo.medis.main;
 import com.puyixiaowo.medis.Routes;
 import com.puyixiaowo.medis.bean.AppConfigBean;
 import com.puyixiaowo.medis.utils.AppUtils;
+import com.puyixiaowo.medis.utils.ConfigUtils;
 
 import static spark.Spark.port;
 
@@ -21,6 +22,7 @@ public class Main {
         AppConfigBean config = AppUtils.getAppConfigBean(args);
         port(config.getPort());
 
+        ConfigUtils.init();
         Routes.init();
     }
 }

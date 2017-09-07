@@ -28,6 +28,7 @@ var index = {
 
             });
         }, 'json');
+
     };
 
     /**
@@ -35,6 +36,10 @@ var index = {
      * @param key
      */
     index.getValue = function(key) {
+        if (index.validateNoPass()) {
+            salert(msg);
+            return;
+        }
         $.get(index.base + '/redis/get', {db: index.$selectDB.val(), key: key}, function (data) {
             $('#input_key').val(key);
             $('#text_value').val(data);
@@ -46,6 +51,11 @@ var index = {
      * @param key
      */
     index.keys = function(key) {
+        if (index.validateNoPass()) {
+            salert(msg);
+            return;
+        }
+
         var $list = $('#list_key');
         $.get(index.base + "/redis/keys", {
             db: index.$selectDB.val(),
@@ -153,37 +163,32 @@ var index = {
      * 保存配置并连接redis
      */
     index.saveConfAndConnect = function(){
-        var host = index.$inputHost.val();
-        var port = index.$inputPort.val();
-        var pass = index.$inputPass.val();
 
-        if (!host) {
-            salert("未填入host");
-            return;
-        }
-        if (!port) {
-            salert("未填入port");
-            return;
-        }
-        if (!pass) {
-            salert("未填入pass");
+        if (index.validateNoPass()) {
+            salert(msg);
             return;
         }
 
-
-
-        $.get(index.base + "/redis/connect", {
-            host: host,
-            port: port,
-            pass: pass
-        }, function (data) {
+        $.ajax({
+            type: 'get',
+            async: false,
+            url: index.base + "/redis/connect",
+            data: {
+                host: host,
+                port: port,
+                pass: pass
+            },
+            success: function (data) {
                 if (!data) {
                     salert("配置不正确！");
+                } else {
+                    //统计
+                    index.count();
                 }
-        }, 'json');
 
-        //统计
-        index.count();
+            }
+        });
+
     };
 
     /**
@@ -245,6 +250,25 @@ var index = {
 
     };
 
+    /**
+     * 校验参数
+     * @returns {*}
+     */
+    index.validateNoPass = function() {
+        var host = index.$inputHost.val();
+        var port = index.$inputPort.val();
+        var pass = index.$inputPass.val();
+
+        if (!host) {
+            return "未填入host";
+        }
+        if (!port) {
+            return "未填入port";
+        }
+        if (!pass) {
+            return "未填入pass";
+        }
+    };
 
     index.init = function() {
         index.loadTags();
