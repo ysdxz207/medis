@@ -36,7 +36,8 @@ var index = {
      * @param key
      */
     index.getValue = function(key) {
-        if (index.validateNoPass()) {
+        var msg = index.validateNoPass()
+        if (msg) {
             salert(msg);
             return;
         }
@@ -51,7 +52,8 @@ var index = {
      * @param key
      */
     index.keys = function(key) {
-        if (index.validateNoPass()) {
+        var msg = index.validateNoPass()
+        if (msg) {
             salert(msg);
             return;
         }
@@ -164,7 +166,8 @@ var index = {
      */
     index.saveConfAndConnect = function(){
 
-        if (index.validateNoPass()) {
+        var msg = index.validateNoPass()
+        if (msg) {
             salert(msg);
             return;
         }
