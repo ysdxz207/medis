@@ -34,17 +34,7 @@ public class IndexController {
                         "index.html"));
     }
 
-    /**
-     * 获取标签列表
-     *
-     * @param request
-     * @param response
-     * @return
-     */
-    public static String tags(Request request, Response response) {
 
-        return ConfigUtils.readTags();
-    }
 
 
     /**

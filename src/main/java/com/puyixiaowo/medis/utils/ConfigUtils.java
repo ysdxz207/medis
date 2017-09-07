@@ -15,7 +15,7 @@ import java.io.IOException;
 public class ConfigUtils {
     public static final String BASE_PATH = System.getProperty("user.dir");
     public static final String REDIS_CONF = BASE_PATH + "/conf/redis.json";
-    public static final String TAGS = BASE_PATH + "/tag/tags.json";
+    public static final String TAGS = BASE_PATH + "/conf/tags.json";
 
 
     private static File fileTags;
@@ -40,8 +40,13 @@ public class ConfigUtils {
         }
     }
 
-    public static String readTags(){
-        return FileUtils.readFile(TAGS);
+    public static JSONArray readTags(){
+        JSONArray arr = new JSONArray();
+        String str = FileUtils.readFile(TAGS);
+        if (StringUtils.isBlank(str)) {
+            return arr;
+        }
+        return JSON.parseArray(str);
     }
 
     public static JSONArray readRedisConf(){
@@ -51,5 +56,9 @@ public class ConfigUtils {
 
     public static void saveRedisConf(String str) {
         FileUtils.writeFile(REDIS_CONF, str);
+    }
+
+    public static void saveTags(String str) {
+        FileUtils.writeFile(TAGS, str);
     }
 }

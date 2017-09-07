@@ -1,6 +1,7 @@
 package com.puyixiaowo.medis;
 
 import com.puyixiaowo.medis.controller.IndexController;
+import com.puyixiaowo.medis.controller.TagController;
 import spark.Spark;
 
 import static spark.Spark.*;
@@ -13,7 +14,11 @@ public class Routes {
 
 
         path("/tag", () -> {
-            get("/tags", ((request, response) -> IndexController.tags(request, response)));
+
+            get("/", ((request, response) -> TagController.tag(request, response)));
+            get("/tags", ((request, response) -> TagController.tags(request, response)));
+            get("/add", ((request, response) -> TagController.add(request, response)));
+            get("/delete", ((request, response) -> TagController.delete(request, response)));
         });
 
 

@@ -18,6 +18,7 @@ var index = {
             index.$select.typeahead({
                 source: data,
                 showHintOnFocus: true,
+                autoSelect: false,
                 displayText: function (item) {
                     return item.name + "[" + item.value + "]";
                 },
@@ -115,11 +116,8 @@ var index = {
             if(event.which == "13")
                 index.keys($('#select_key').val());
         });
-        $('#btn_submit').on('click', function () {
-            index.keys($('#select_key').val());
-        });
 
-        $('#select_opration').on('change', function () {
+        $('#select_operation').on('change', function () {
             switch (this.value) {
                 case 'delete':
                     salert('确定删除？',function(choose){
@@ -184,6 +182,7 @@ var index = {
             type: 'get',
             async: false,
             url: index.base + "/redis/connect",
+            dataType: 'json',
             data: {
                 host: host,
                 port: port,

@@ -66,8 +66,8 @@
             </div>
             <div class="form-group">
                 <div class="input-group">
-                    <input type="text" class="form-control" id="select_key" data-provide="typeahead" placeholder="key,支持*匹配">
-                    <div class="input-group-addon btn btn-default" id="btn_submit">提交</div>
+                    <input type="text" class="form-control" id="select_key" data-provide="typeahead" placeholder="key,支持*匹配,回车查询">
+                    <a href="${base}/tag/" class="input-group-addon btn btn-default" >标签配置</a>
                 </div>
             </div>
 
@@ -81,7 +81,7 @@
                     <input id="input_key" class="form-control">
                 </div>
                 <div class="input-group pull-right col-sm-2 col-md-2 col-lg-2">
-                    <select class="form-control" id="select_opration">
+                    <select class="form-control" id="select_operation">
                         <option value="">选择操作</option>
                         <option value="delete" class="text-danger">删除</option>
                         <option value="edit" class="text-success">修改</option>
