@@ -115,6 +115,84 @@ var index = {
         $('#btn_edit').on('click', function () {
             index.editRedis();
         });
+        $('#btn_save_conf').on('click', function () {
+            index.saveConfAndConnect();
+        });
+        $('#btn_delete_conf').on('click', function () {
+            index.deleteConf();
+        });
+        $('#select_conf').on('change', function () {
+            var confStr = $(this).val();
+            if (confStr == '') {
+                $('#input_host').val('');
+                $('#input_port').val('');
+                $('#input_pass').val('');
+                return;
+            }
+            var confArr = confStr.split(':');
+            var host = confArr[0];
+            var port = confArr[1];
+            var pass = confArr[2];
+            $('#input_host').val(host);
+            $('#input_port').val(port);
+            $('#input_pass').val(pass);
+            index.saveConfAndConnect();
+        });
+    };
+
+    /**
+     * 保存配置并连接redis
+     */
+    index.saveConfAndConnect = function(){
+        var host = $('#input_host').val();
+        var port = $('#input_port').val();
+        var pass = $('#input_pass').val();
+
+        if (!host) {
+            salert("未填入host");
+            return;
+        }
+        if (!port) {
+            salert("未填入port");
+            return;
+        }
+        if (!pass) {
+            salert("未填入pass");
+            return;
+        }
+
+
+
+        $.get(index.base + "/redis/connect", {
+            host: host,
+            port: port,
+            pass: pass
+        }, function (data) {
+                if (!data) {
+                    salert("配置不正确！");
+                }
+        }, 'json');
+    };
+
+    /**
+     * 删除配置
+     */
+    index.deleteConf = function () {
+        var host = $('#input_host').val();
+        var port = $('#input_port').val();
+        var pass = $('#input_pass').val();
+
+        $.get(index.base + "/redis/conf/delete", {
+            host: host,
+            port: port,
+            pass: pass
+        }, function (data) {
+            if (data) {
+                salert("删除成功！");
+            } else {
+                salert("删除失败！");
+            }
+        }, 'json');
     };
 
 

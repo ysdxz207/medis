@@ -1,20 +1,22 @@
 package com.puyixiaowo.medis.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.puyixiaowo.medis.bean.RedisCountBean;
 import com.puyixiaowo.medis.freemarker.FreeMarkerTemplateEngine;
 import com.puyixiaowo.medis.utils.FileUtils;
 import com.puyixiaowo.medis.utils.RedisUtils;
-import com.puyixiaowo.medis.utils.ResourceUtils;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class IndexController {
+
+    private static final String REDIS_CONF = "conf/redis.json";
 
     /**
      * 首页
@@ -24,11 +26,18 @@ public class IndexController {
      * @return
      */
     public static Object index(Request request, Response response) {
-
         Map<String, Object> model = new HashMap<>();
 
-        model.put("countList", RedisUtils.count().toJavaList(RedisCountBean.class));
+        if (RedisUtils.isConnected()) {
+
+            model.put("countList", RedisUtils.count().toJavaList(RedisCountBean.class));
 //        model.put("dbList", RedisUtils.dbList().toJavaList(RedisCountBean.class));
+
+        }
+
+
+        //读取配置
+        model.put("confList", JSON.parseArray(FileUtils.readResourceFile(REDIS_CONF)));
 
         return new FreeMarkerTemplateEngine()
                 .render(new ModelAndView(model,
@@ -89,5 +98,54 @@ public class IndexController {
             success = false;
         }
         return success;
+    }
+
+    public static Object saveConfAndConnect(Request request, Response response) {
+        //保存配置
+        String host = request.queryParams("host");
+        String port = request.queryParams("port");
+        String pass = request.queryParams("pass");
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("host", host);
+        jsonObject.put("port", port);
+        jsonObject.put("pass", pass);
+        JSONArray conf = JSON.parseArray(FileUtils.readResourceFile("conf/redis.json"));
+
+        if (!conf.contains(jsonObject)) {
+            conf.add(jsonObject);
+        }
+
+        FileUtils.writeResourceFile(REDIS_CONF, conf.toJSONString());
+        RedisUtils.init(request.queryParams("host"),
+                Integer.valueOf(request.queryParams("port")),
+                request.queryParams("pass"));
+        return RedisUtils.isConnected();
+    }
+
+    public static Object confDelete(Request request, Response response) {
+        String host = request.queryParams("host");
+        String port = request.queryParams("port");
+        String pass = request.queryParams("pass");
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("host", host);
+        jsonObject.put("port", port);
+        jsonObject.put("pass", pass);
+
+
+        JSONArray conf = JSON.parseArray(FileUtils.readResourceFile(REDIS_CONF));
+        boolean flag = conf.remove(jsonObject);
+
+        try {
+            FileUtils.writeResourceFile(REDIS_CONF, conf.toJSONString());
+            if (flag) {
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+
     }
 }

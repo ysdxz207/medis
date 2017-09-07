@@ -3,10 +3,7 @@ package com.puyixiaowo.medis.utils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 /**
  * @author Moses
@@ -39,5 +36,22 @@ public class FileUtils {
             IOUtils.copy(in, out);
         }
         return tempFile;
+    }
+
+    public static void writeResourceFile(String filePath, String text) {
+        PrintWriter writer = null;
+        try {
+            writer =
+                    new PrintWriter(
+                            new File(FileUtils.class.getClassLoader().getResource(filePath).getPath()));
+
+            writer.write(text);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (writer != null) {
+                writer.close();
+            }
+        }
     }
 }

@@ -22,6 +22,8 @@ public class Routes {
             get("/get", ((request, response) -> IndexController.redisGet(request, response)));
             get("/delete", ((request, response) -> IndexController.redisDelete(request, response)));
             get("/edit", ((request, response) -> IndexController.editDelete(request, response)));
+            get("/connect", ((request, response) -> IndexController.saveConfAndConnect(request, response)));
+            get("/conf/delete", ((request, response) -> IndexController.confDelete(request, response)));
         });
     }
 }

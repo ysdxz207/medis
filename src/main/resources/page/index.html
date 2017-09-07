@@ -31,23 +31,31 @@
         <div class="col-md-12 form-group form-inline">
             <div class="input-group col-md-3">
                 <span class="input-group-addon">host</span>
-                <input type="text" class="form-control">
+                <input type="text" class="form-control" id="input_host">
             </div>
             <div class="input-group col-md-2">
                 <span class="input-group-addon">port</span>
-                <input type="text" class="form-control">
+                <input type="text" class="form-control" id="input_port">
             </div>
             <div class="input-group col-md-3">
                 <span class="input-group-addon">auth</span>
-                <input type="text" class="form-control">
+                <input type="text" class="form-control" id="input_pass">
             </div>
             <div class="input-group col-md-1">
-                <input type="button" class="btn btn-warning" value="保存配置">
+                <input type="button" class="btn btn-warning" value="保存配置" id="btn_save_conf">
             </div>
-            <div class="input-group col-md-2 pull-right">
-                <select class="form-control" >
+            <div class="input-group col-md-2">
+                <select class="form-control" id="select_conf">
                     <option value="">选择配置</option>
+                    <#if (((confList)??) && (((confList)?size) > 0))>
+                        <#list confList as conf>
+                            <option value="${conf.host + ':' + conf.port + ':' + conf.pass}">${conf.host + ":" + conf.port}</option>
+                        </#list>
+                    </#if>
                 </select>
+            </div>
+            <div class="input-group col-md-1">
+                <input type="button" class="btn btn-danger" value="删除配置" id="btn_delete_conf">
             </div>
         </div>
         <div class="col-md-4 form-group">
@@ -61,8 +69,6 @@
                                     <#if dbname == count.name>
                                         <option value="${i}">db${i}&nbsp;&nbsp;&nbsp;&nbsp;key数量:${(count.count?c)!}
                                         </option>
-                                        <#else>
-                                            <option value="${i}">db${i}</option>
                                     </#if>
                                 </#list>
                             </#if>

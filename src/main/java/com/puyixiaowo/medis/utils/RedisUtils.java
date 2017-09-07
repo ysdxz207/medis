@@ -22,18 +22,27 @@ import java.util.Set;
 public class RedisUtils {
     private static JedisPool jedisPool;
 
+    private static int maxActive;
+    private static int maxIdle;
+    private static int maxWait;
+
     private static final int TIME_OUT = 3000;
 
     static {
         //读取相关的配置
         ResourceBundle resourceBundle = ResourceBundle.getBundle("redis");
-        String ip = resourceBundle.getString("redis.host");
-        int port = Integer.parseInt(resourceBundle.getString("redis.port"));
-        String password = resourceBundle.getString("redis.password");
-        int maxActive = Integer.parseInt(resourceBundle.getString("redis.pool.maxActive"));
-        int maxIdle = Integer.parseInt(resourceBundle.getString("redis.pool.maxIdle"));
-        int maxWait = Integer.parseInt(resourceBundle.getString("redis.pool.maxWait"));
+        maxActive = Integer.parseInt(resourceBundle.getString("redis.pool.maxActive"));
+        maxIdle = Integer.parseInt(resourceBundle.getString("redis.pool.maxIdle"));
+        maxWait = Integer.parseInt(resourceBundle.getString("redis.pool.maxWait"));
+    }
 
+    public static boolean isConnected(){
+        return testConnection();
+    }
+
+    public static void init(String host,
+                            int port,
+                            String pass) {
 
         // 建立连接池配置参数
         JedisPoolConfig config = new JedisPoolConfig();
@@ -43,17 +52,22 @@ public class RedisUtils {
         config.setMaxWaitMillis(maxWait);
         // 设置空间连接
         config.setMaxIdle(maxIdle);
-        if (StringUtils.isNotBlank(password)) {
-            jedisPool = new JedisPool(config, ip, port, TIME_OUT, password);
+        if (StringUtils.isNotBlank(pass)) {
+            jedisPool = new JedisPool(config, host, port, TIME_OUT, pass);
         } else {
-            jedisPool = new JedisPool(config, ip, port);
+            jedisPool = new JedisPool(config, host, port);
         }
-
+        testConnection();
     }
 
-    public static void testConnection() {
-        getJedis(0).set("TEST_CONNECTION", "connected");
-        getJedis(0).del("TEST_CONNECTION");
+    public static boolean testConnection() {
+        try {
+            getJedis(0).set("TEST_CONNECTION", "connected");
+            getJedis(0).del("TEST_CONNECTION");
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 
@@ -132,7 +146,7 @@ public class RedisUtils {
 
 
     public static JSONArray count() {
-        String [] keyspaceArr = getJedis(0).info("keyspace").split("(\\r\\n)|(\\n)");
+        String[] keyspaceArr = getJedis(0).info("keyspace").split("(\\r\\n)|(\\n)");
 
         JSONArray arr = new JSONArray();
 
