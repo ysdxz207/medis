@@ -172,6 +172,10 @@ var index = {
             return;
         }
 
+        var host = index.$inputHost.val();
+        var port = index.$inputPort.val();
+        var pass = index.$inputPass.val();
+
         $.ajax({
             type: 'get',
             async: false,
