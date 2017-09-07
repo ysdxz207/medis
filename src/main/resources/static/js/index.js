@@ -19,7 +19,7 @@ var index = {
                 source: data,
                 showHintOnFocus: true,
                 displayText: function (item) {
-                    return item.name + "&nbsp;&nbsp;" + item.value;
+                    return item.name + "[" + item.value + "]";
                 },
                 afterSelect: function (item) {
                     index.$select.val(item.value);
@@ -111,8 +111,12 @@ var index = {
 
 
     index.bind = function () {
+        $('#select_key').keydown(function(event){
+            if(event.which == "13")
+                index.keys($('#select_key').val());
+        });
         $('#btn_submit').on('click', function () {
-            index.keys($('#select_key').val())
+            index.keys($('#select_key').val());
         });
 
         $('#select_opration').on('change', function () {
