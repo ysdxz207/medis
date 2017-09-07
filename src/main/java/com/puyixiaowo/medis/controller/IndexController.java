@@ -28,14 +28,6 @@ public class IndexController {
     public static Object index(Request request, Response response) {
         Map<String, Object> model = new HashMap<>();
 
-        if (RedisUtils.isConnected()) {
-
-            model.put("countList", RedisUtils.count().toJavaList(RedisCountBean.class));
-//        model.put("dbList", RedisUtils.dbList().toJavaList(RedisCountBean.class));
-
-        }
-
-
         //读取配置
         model.put("confList", JSON.parseArray(FileUtils.readResourceFile(REDIS_CONF)));
 
@@ -147,5 +139,14 @@ public class IndexController {
             return false;
         }
 
+    }
+
+    public static Object count(Request request, Response response) {
+        if (RedisUtils.isConnected()) {
+
+            return JSON.toJSONString(RedisUtils.count().toJavaList(RedisCountBean.class));
+        }
+
+        return "";
     }
 }

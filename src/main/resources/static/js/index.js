@@ -1,15 +1,13 @@
 var index = {
     base: $('#base').val(),
-    $select:  $("#select_key")
+    $selectDB: $('#select_db'),
+    $select:  $("#select_key"),
+    $inputHost: $('#input_host'),
+    $inputPort: $('#input_port'),
+    $inputPass: $('#input_pass'),
+    format: false
 };
 (function ($, index) {
-    /**
-     * 获取选中的db
-     * @returns {*}
-     */
-    index.getSelectDB = function() {
-        return $('#select_db').val();
-    };
 
     /**
      * 载入标签列表
@@ -37,7 +35,7 @@ var index = {
      * @param key
      */
     index.getValue = function(key) {
-        $.get(index.base + '/redis/get', {db: index.getSelectDB(), key: key}, function (data) {
+        $.get(index.base + '/redis/get', {db: index.$selectDB.val(), key: key}, function (data) {
             $('#input_key').val(key);
             $('#text_value').val(data);
         })
@@ -50,7 +48,7 @@ var index = {
     index.keys = function(key) {
         var $list = $('#list_key');
         $.get(index.base + "/redis/keys", {
-            db: index.getSelectDB(),
+            db: index.$selectDB.val(),
             key: key
         }, function (data) {
             $list.empty();
@@ -73,7 +71,7 @@ var index = {
      */
     index.deleteRedis = function(key) {
 
-        $.get(index.base + '/redis/delete', {db: index.getSelectDB(), key: key}, function (data) {
+        $.get(index.base + '/redis/delete', {db: index.$selectDB.val(), key: key}, function (data) {
             if (data > 0) {
                 salert('删除成功');
             } else {
@@ -90,7 +88,7 @@ var index = {
 
         var key = $('#input_key').val();
         var value = $('#text_value').val();
-        $.get(index.base + '/redis/edit', {db: index.getSelectDB(), key: key, value: value}, function (data) {
+        $.get(index.base + '/redis/edit', {db: index.$selectDB.val(), key: key, value: value}, function (data) {
             if (data) {
                 salert('修改成功');
             } else {
@@ -105,16 +103,26 @@ var index = {
             index.keys($('#select_key').val())
         });
 
-        $('#btn_del').on('click', function () {
-            salert('确定删除？',function(choose){
-                if (choose) {
-                    index.deleteRedis($('#input_key').val())
-                }
-            });
+        $('#select_opration').on('change', function () {
+            switch (this.value) {
+                case 'delete':
+                    salert('确定删除？',function(choose){
+                        if (choose) {
+                            index.deleteRedis($('#input_key').val())
+                        }
+                    });
+                    break;
+                case 'edit':
+                    index.editRedis();
+                    break;
+                case 'format':
+                    index.toggleFormat(this);
+                    break;
+            }
+
+            $(this).val('');
         });
-        $('#btn_edit').on('click', function () {
-            index.editRedis();
-        });
+
         $('#btn_save_conf').on('click', function () {
             index.saveConfAndConnect();
         });
@@ -124,18 +132,19 @@ var index = {
         $('#select_conf').on('change', function () {
             var confStr = $(this).val();
             if (confStr == '') {
-                $('#input_host').val('');
-                $('#input_port').val('');
-                $('#input_pass').val('');
+                index.$inputHost.val('');
+                index.$inputPort.val('');
+                index.$inputPass.val('');
+                index.$selectDB.empty();
                 return;
             }
             var confArr = confStr.split(':');
             var host = confArr[0];
             var port = confArr[1];
             var pass = confArr[2];
-            $('#input_host').val(host);
-            $('#input_port').val(port);
-            $('#input_pass').val(pass);
+            index.$inputHost.val(host);
+            index.$inputPort.val(port);
+            index.$inputPass.val(pass);
             index.saveConfAndConnect();
         });
     };
@@ -144,9 +153,9 @@ var index = {
      * 保存配置并连接redis
      */
     index.saveConfAndConnect = function(){
-        var host = $('#input_host').val();
-        var port = $('#input_port').val();
-        var pass = $('#input_pass').val();
+        var host = index.$inputHost.val();
+        var port = index.$inputPort.val();
+        var pass = index.$inputPass.val();
 
         if (!host) {
             salert("未填入host");
@@ -172,15 +181,18 @@ var index = {
                     salert("配置不正确！");
                 }
         }, 'json');
+
+        //统计
+        index.count();
     };
 
     /**
      * 删除配置
      */
     index.deleteConf = function () {
-        var host = $('#input_host').val();
-        var port = $('#input_port').val();
-        var pass = $('#input_pass').val();
+        var host = index.$inputHost.val();
+        var port = index.$inputPort.val();
+        var pass = index.$inputPass.val();
 
         $.get(index.base + "/redis/conf/delete", {
             host: host,
@@ -193,6 +205,44 @@ var index = {
                 salert("删除失败！");
             }
         }, 'json');
+    };
+
+
+    /**
+     * 获取数据库统计
+     */
+    index.count = function () {
+
+        $.get(index.base + "/redis/count", function (data) {
+            if (data) {
+                index.$selectDB.empty();
+                $.each(data, function (i, count) {
+                    var $option = $('<option value="' + count.name.replace(/[^0-9]/ig,"") + '">'
+                        + count.name + '&nbsp;&nbsp;&nbsp;&nbsp;key数量:'
+                        + count.count + '</option>');
+                    index.$selectDB.append($option);
+                });
+            }
+        }, 'json');
+    };
+
+    index.toggleFormat = function(btn){
+        if (!index.format) {
+            var strJson = $('#text_value').val();
+            if (!strJson) {
+                return;
+            }
+            var obj = JSON.parse(strJson);
+            var str = JSON.stringify(obj, undefined, 2);
+            $('#text_value').val(str);
+            index.format = true;
+            btn.value = "恢复格式";
+        } else {
+            index.getValue($('#input_key').val());
+            index.format = false;
+            btn.value = "格式化JSON";
+        }
+
     };
 
 

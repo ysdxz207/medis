@@ -37,14 +37,14 @@
                 <span class="input-group-addon">port</span>
                 <input type="text" class="form-control" id="input_port">
             </div>
-            <div class="input-group col-md-3">
+            <div class="input-group col-md-2">
                 <span class="input-group-addon">auth</span>
                 <input type="text" class="form-control" id="input_pass">
             </div>
             <div class="input-group col-md-1">
                 <input type="button" class="btn btn-warning" value="保存配置" id="btn_save_conf">
             </div>
-            <div class="input-group col-md-2">
+            <div class="input-group col-md-3">
                 <select class="form-control" id="select_conf">
                     <option value="">选择配置</option>
                     <#if (((confList)??) && (((confList)?size) > 0))>
@@ -53,32 +53,22 @@
                         </#list>
                     </#if>
                 </select>
-            </div>
-            <div class="input-group col-md-1">
-                <input type="button" class="btn btn-danger" value="删除配置" id="btn_delete_conf">
+                <span class="input-group-addon btn btn-danger" id="btn_delete_conf">删除配置</span>
             </div>
         </div>
         <div class="col-md-4 form-group">
-            <div class="input-group">
-                <span class="input-group-addon">选择数据库</span>
-                <select class="form-control" id="select_db">
-                    <#list 0..14 as i>
-                        <#assign dbname = "db${i}">
-                            <#if (((countList)??) && (((countList)?size) > 0))>
-                                <#list countList as count>
-                                    <#if dbname == count.name>
-                                        <option value="${i}">db${i}&nbsp;&nbsp;&nbsp;&nbsp;key数量:${(count.count?c)!}
-                                        </option>
-                                    </#if>
-                                </#list>
-                            </#if>
-                    </#list>
-
-                </select>
+            <div class="form-group">
+                <div class="input-group">
+                    <span class="input-group-addon">选择数据库</span>
+                    <select class="form-control" id="select_db">
+                    </select>
+                </div>
             </div>
-            <div class="input-group">
-                <input type="text" class="form-control" id="select_key" data-provide="typeahead" placeholder="key,支持*匹配">
-                <div class="input-group-addon btn btn-default" id="btn_submit">提交</div>
+            <div class="form-group">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="select_key" data-provide="typeahead" placeholder="key,支持*匹配">
+                    <div class="input-group-addon btn btn-default" id="btn_submit">提交</div>
+                </div>
             </div>
 
             <div>
@@ -86,14 +76,20 @@
             </div>
         </div>
         <div class="col-md-8 form-group">
-            <div class="input-group">
-                <input id="input_key" class="form-control">
-                <span class="input-group-addon btn btn-danger" id="btn_del">删除</span>
+            <div class="form-group form-inline">
+                <div class="input-group col-xs-12 col-sm-10 col-md-10 col-lg-10">
+                    <input id="input_key" class="form-control">
+                </div>
+                <div class="input-group pull-right col-sm-2 col-md-2 col-lg-2">
+                    <select class="form-control" id="select_opration">
+                        <option value="">选择操作</option>
+                        <option value="delete" class="text-danger">删除</option>
+                        <option value="edit" class="text-success">修改</option>
+                        <option value="format">格式化JSON</option>
+                    </select>
+                </div>
             </div>
-            <div class="input-group">
-                <textarea id="text_value" rows="20" class="form-control"></textarea>
-                <span class="input-group-addon btn btn-success" id="btn_edit">修改</span>
-            </div>
+            <textarea id="text_value" rows="20" class="form-control"></textarea>
         </div>
     </div>
 </div>
