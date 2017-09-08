@@ -14,12 +14,11 @@ var index = {
      * 载入标签列表
      */
     index.loadTags = function () {
-
+        var options;
         $.get(index.base + "/tag/tags", function (data) {
-
-            index.$inputKeyTag.typeahead({
+            options = {
                 source: data,
-                showHintOnFocus: true,
+                showHintOnFocus: 'all',
                 autoSelect: false,
                 fitToElement: true,
                 displayText: function (item) {
@@ -30,13 +29,11 @@ var index = {
                     index.keys(item.value);
                 }
 
-            });
-
-
+            };
+            index.$inputKeyTag.typeahead(options);
 
 
         }, 'json');
-
 
     };
 
@@ -117,9 +114,13 @@ var index = {
 
 
     index.bind = function () {
-        index.$inputKeyTag.keydown(function (event) {
-            if (event.which == "13")
+        index.$inputKeyTag.keyup(function (event) {
+            if (event.keyCode == 13) {
                 index.keys(index.$inputKeyTag.val());
+            } else if (!this.value && event.keyCode != 38 && event.keyCode != 40) {
+                index.$inputKeyTag.blur().focus();
+            }
+
         });
 
         $('#select_operation').on('change', function () {

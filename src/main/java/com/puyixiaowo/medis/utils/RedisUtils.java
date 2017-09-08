@@ -22,7 +22,7 @@ import java.util.Set;
 public class RedisUtils {
     private static JedisPool jedisPool;
 
-    private static int maxActive;
+    private static int maxTotal;
     private static int maxIdle;
     private static int maxWait;
 
@@ -31,7 +31,7 @@ public class RedisUtils {
     static {
         //读取相关的配置
         ResourceBundle resourceBundle = ResourceBundle.getBundle("redis");
-        maxActive = Integer.parseInt(resourceBundle.getString("redis.pool.maxActive"));
+        maxTotal = Integer.parseInt(resourceBundle.getString("redis.pool.maxTotal"));
         maxIdle = Integer.parseInt(resourceBundle.getString("redis.pool.maxIdle"));
         maxWait = Integer.parseInt(resourceBundle.getString("redis.pool.maxWait"));
     }
@@ -47,7 +47,7 @@ public class RedisUtils {
         // 建立连接池配置参数
         JedisPoolConfig config = new JedisPoolConfig();
         // 设置最大连接数
-        config.setMaxTotal(maxActive);
+        config.setMaxTotal(maxTotal);
         // 设置最大阻塞时间
         config.setMaxWaitMillis(maxWait);
         // 设置空间连接
@@ -72,10 +72,10 @@ public class RedisUtils {
 
 
     private static Jedis getJedis(int dbIndex) {
-        Jedis jedis = null;
-        try {
-            jedis = jedisPool.getResource();
+        Jedis j = null;
+        try (Jedis jedis = jedisPool.getResource()){
             jedis.select(dbIndex);
+            j = jedis;
         } catch (Exception e) {
             if (e.getCause() instanceof JedisDataException) {
 
@@ -87,11 +87,9 @@ public class RedisUtils {
                 throw new JedisConnectionException("Redis可能未启动。异常信息："
                         + e.getCause().getMessage());
             }
-        } finally {
-            if (jedis != null)
-                jedis.close();
         }
-        return jedis;
+
+        return j;
     }
 
     public static String get(int dbIndex, String key) {
