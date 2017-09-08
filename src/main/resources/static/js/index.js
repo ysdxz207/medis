@@ -1,10 +1,11 @@
 var index = {
     base: $('#base').val(),
     $selectDB: $('#select_db'),
-    $select:  $("#select_key"),
+    $inputKeyTag: $("#input_key_tag"),
     $inputHost: $('#input_host'),
     $inputPort: $('#input_port'),
     $inputPass: $('#input_pass'),
+    $selectConf: $('#select_conf'),
     format: false
 };
 (function ($, index) {
@@ -13,22 +14,29 @@ var index = {
      * 载入标签列表
      */
     index.loadTags = function () {
+
         $.get(index.base + "/tag/tags", function (data) {
 
-            index.$select.typeahead({
+            index.$inputKeyTag.typeahead({
                 source: data,
                 showHintOnFocus: true,
                 autoSelect: false,
+                fitToElement: true,
                 displayText: function (item) {
                     return item.name + "[" + item.value + "]";
                 },
                 afterSelect: function (item) {
-                    index.$select.val(item.value);
+                    index.$inputKeyTag.val(item.value);
                     index.keys(item.value);
                 }
 
             });
+
+
+
+
         }, 'json');
+
 
     };
 
@@ -36,8 +44,8 @@ var index = {
      * 获取值
      * @param key
      */
-    index.getValue = function(key) {
-        var msg = index.validateNoPass()
+    index.getValue = function (key) {
+        var msg = index.validateFail();
         if (msg) {
             salert(msg);
             return;
@@ -52,8 +60,8 @@ var index = {
      * 查询key
      * @param key
      */
-    index.keys = function(key) {
-        var msg = index.validateNoPass()
+    index.keys = function (key) {
+        var msg = index.validateFail();
         if (msg) {
             salert(msg);
             return;
@@ -75,14 +83,11 @@ var index = {
     };
 
 
-
-
-
     /**
      * 删除
      * @param key
      */
-    index.deleteRedis = function(key) {
+    index.deleteRedis = function (key) {
 
         $.get(index.base + '/redis/delete', {db: index.$selectDB.val(), key: key}, function (data) {
             if (data > 0) {
@@ -97,7 +102,7 @@ var index = {
     /**
      * 修改或添加
      */
-    index.editRedis = function() {
+    index.editRedis = function () {
 
         var key = $('#input_key').val();
         var value = $('#text_value').val();
@@ -112,15 +117,15 @@ var index = {
 
 
     index.bind = function () {
-        $('#select_key').keydown(function(event){
-            if(event.which == "13")
-                index.keys($('#select_key').val());
+        index.$inputKeyTag.keydown(function (event) {
+            if (event.which == "13")
+                index.keys(index.$inputKeyTag.val());
         });
 
         $('#select_operation').on('change', function () {
             switch (this.value) {
                 case 'delete':
-                    salert('确定删除？',function(choose){
+                    salert('确定删除？', function (choose) {
                         if (choose) {
                             index.deleteRedis($('#input_key').val())
                         }
@@ -166,9 +171,9 @@ var index = {
     /**
      * 保存配置并连接redis
      */
-    index.saveConfAndConnect = function(){
+    index.saveConfAndConnect = function () {
 
-        var msg = index.validateNoPass()
+        var msg = index.validateFail();
         if (msg) {
             salert(msg);
             return;
@@ -232,7 +237,7 @@ var index = {
             if (data) {
                 index.$selectDB.empty();
                 $.each(data, function (i, count) {
-                    var $option = $('<option value="' + count.name.replace(/[^0-9]/ig,"") + '">'
+                    var $option = $('<option value="' + count.name.replace(/[^0-9]/ig, "") + '">'
                         + count.name + '&nbsp;&nbsp;&nbsp;&nbsp;key数量:'
                         + count.count + '</option>');
                     index.$selectDB.append($option);
@@ -241,7 +246,7 @@ var index = {
         }, 'json');
     };
 
-    index.toggleFormat = function(btn){
+    index.toggleFormat = function (btn) {
         if (!index.format) {
             var strJson = $('#text_value').val();
             if (!strJson) {
@@ -264,7 +269,7 @@ var index = {
      * 校验参数
      * @returns {*}
      */
-    index.validateNoPass = function() {
+    index.validateFail = function () {
         var host = index.$inputHost.val();
         var port = index.$inputPort.val();
         var pass = index.$inputPass.val();
@@ -280,9 +285,21 @@ var index = {
         }
     };
 
-    index.init = function() {
+    /**
+     * 默认配置
+     */
+    index.loadDefaultConf = function () {
+        var $options = index.$selectConf.find('option');
+        if ($options.length > 1) {
+            var $option = $($options[1]);
+            $option.prop('selected', true);
+            index.$selectConf.trigger('change');
+        }
+    };
+    index.init = function () {
         index.loadTags();
         index.bind();
+        index.loadDefaultConf();
     };
 
     index.init();
