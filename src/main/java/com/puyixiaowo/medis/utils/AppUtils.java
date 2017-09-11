@@ -36,4 +36,9 @@ public class AppUtils {
 
         return JSON.parseObject(JSON.toJSONString(argMap), AppConfigBean.class);
     }
+
+    public static boolean isLinux() {
+        return !System.getProperty("os.name").toLowerCase()
+                .startsWith("windows");
+    }
 }

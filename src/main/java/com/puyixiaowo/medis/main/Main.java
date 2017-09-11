@@ -5,6 +5,9 @@ import com.puyixiaowo.medis.bean.AppConfigBean;
 import com.puyixiaowo.medis.utils.AppUtils;
 import com.puyixiaowo.medis.utils.ConfigUtils;
 
+import java.io.IOException;
+import java.net.InetAddress;
+
 import static spark.Spark.port;
 
 /**
@@ -17,12 +20,18 @@ public class Main {
      * 默认启动端口8004
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
         AppConfigBean config = AppUtils.getAppConfigBean(args);
         port(config.getPort());
 
         ConfigUtils.init();
         Routes.init();
+
+        if (!AppUtils.isLinux()) {
+            Runtime.getRuntime().exec(
+                    "rundll32 url.dll,FileProtocolHandler http://localhost:"
+                            + config.getPort());
+        }
     }
 }
