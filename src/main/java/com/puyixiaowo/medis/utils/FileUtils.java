@@ -12,12 +12,13 @@ import java.io.*;
 public class FileUtils {
     public static final String PREFIX = "f_blog_stream2file";
     public static final String SUFFIX = ".tmp";
+    private static final String ENCODING = "UTF-8";
 
     public static String readResourceFile(String filePath) {
         LineIterator it = null;
         StringBuilder sb = new StringBuilder();
         try {
-            it = org.apache.commons.io.FileUtils.lineIterator(stream2file(ResourceUtils.readFile(filePath)), "UTF-8");
+            it = org.apache.commons.io.FileUtils.lineIterator(stream2file(ResourceUtils.readFile(filePath)), ENCODING);
             while (it.hasNext()) {
                 sb.append(it.nextLine() + "\n");
             }
@@ -41,7 +42,7 @@ public class FileUtils {
 
     public static void writeFile(String filePath, String text) {
         try {
-            org.apache.commons.io.FileUtils.write(new File(filePath), text);
+            org.apache.commons.io.FileUtils.write(new File(filePath), text, ENCODING);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -51,7 +52,7 @@ public class FileUtils {
         LineIterator it = null;
         StringBuilder sb = new StringBuilder();
         try {
-            it = org.apache.commons.io.FileUtils.lineIterator(new File(filePath), "UTF-8");
+            it = org.apache.commons.io.FileUtils.lineIterator(new File(filePath), ENCODING);
             while (it.hasNext()) {
                 sb.append(it.nextLine() + "\n");
             }
