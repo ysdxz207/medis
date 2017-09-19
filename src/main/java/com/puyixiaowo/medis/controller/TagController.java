@@ -1,12 +1,9 @@
 package com.puyixiaowo.medis.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.puyixiaowo.medis.bean.RedisCountBean;
 import com.puyixiaowo.medis.freemarker.FreeMarkerTemplateEngine;
 import com.puyixiaowo.medis.utils.ConfigUtils;
-import com.puyixiaowo.medis.utils.RedisUtils;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
