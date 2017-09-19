@@ -215,17 +215,21 @@ var index = {
         var port = index.$inputPort.val();
         var pass = index.$inputPass.val();
 
-        $.get(index.base + "/redis/conf/delete", {
-            host: host,
-            port: port,
-            pass: pass
-        }, function (data) {
-            if (data) {
-                salert("删除成功！");
-            } else {
-                salert("删除失败！");
+        salert( '确定删除配置？', function (ok) {
+            if (ok) {
+                $.get(index.base + "/redis/conf/delete", {
+                    host: host,
+                    port: port,
+                    pass: pass
+                }, function (data) {
+                    if (data) {
+                        salert("删除成功！");
+                    } else {
+                        salert("删除失败！");
+                    }
+                }, 'json');
             }
-        }, 'json');
+        });
     };
 
 
