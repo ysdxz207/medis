@@ -45,8 +45,15 @@ public class IndexController {
      * @return
      */
     public static String redisGet(Request request, Response response) {
-        return RedisUtils.get(Integer.valueOf(request.queryParams("db")),
-                request.queryParams("key"));
+        Integer db = Integer.valueOf(request.queryParams("db"));
+        String key = request.queryParams("key");
+        String result = "";
+        try {
+            result = RedisUtils.get(db, key);
+        } catch (Exception e) {
+            result = JSON.toJSONString(RedisUtils.hvals(db, key));
+        }
+        return result;
     }
 
     /**

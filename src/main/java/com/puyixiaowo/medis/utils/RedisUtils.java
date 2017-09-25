@@ -191,4 +191,12 @@ public class RedisUtils {
         return 0;
     }
 
+
+    ////////////hash
+    public static List<String> hvals(int dbIndex, String key) {
+        try (Jedis jedis = getJedis(dbIndex)) {
+            return jedis.hvals(key);
+        }
+    }
+
 }
