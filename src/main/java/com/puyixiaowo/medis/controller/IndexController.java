@@ -164,4 +164,12 @@ public class IndexController {
 
         return "";
     }
+
+    public static Object exit(Request request, Response response) {
+        if (RedisUtils.isConnected()) {
+            RedisUtils.close();
+        }
+        System.exit(0);
+        return "";
+    }
 }

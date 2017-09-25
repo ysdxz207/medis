@@ -217,4 +217,8 @@ public class RedisUtils {
             return jedis.hset(key, hkey, value);
         }
     }
+
+    public static void close() {
+        jedisPool.close();
+    }
 }

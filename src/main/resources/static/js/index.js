@@ -119,6 +119,13 @@ var index = {
 
 
     index.bind = function () {
+        $('#exit_system').on('click', function () {
+            salert('确定退出？', function (choose) {
+                if (choose) {
+                    index.exit();
+                }
+            });
+        });
         index.$inputKeyTag.keyup(function (event) {
             if (event.keyCode == 13) {
                 index.keys(index.$inputKeyTag.val());
@@ -348,6 +355,14 @@ var index = {
             $option.prop('selected', true);
             index.$selectConf.trigger('change');
         }
+    };
+
+    index.exit = function () {
+        $.get(index.base + "/exit", function (data) {
+            if (data) {
+
+            }
+        }, 'json');
     };
 
     index.init = function () {

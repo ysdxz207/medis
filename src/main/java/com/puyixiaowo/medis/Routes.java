@@ -11,6 +11,7 @@ public class Routes {
         Spark.staticFileLocation("static");
 
         get("/", ((request, response) -> IndexController.index(request, response)));
+        get("/exit", ((request, response) -> IndexController.exit(request, response)));
 
 
         path("/tag", () -> {
