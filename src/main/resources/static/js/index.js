@@ -149,7 +149,11 @@ var index = {
                     });
                     break;
                 case 'edit':
-                    index.editRedis();
+                    salert('确定修改？', function (choose) {
+                        if (choose) {
+                            index.editRedis();
+                        }
+                    });
                     break;
                 case 'format':
                     index.toggleFormat(this);
@@ -175,7 +179,11 @@ var index = {
                     });
                     break;
                 case 'edit':
-                    index.editRedis();
+                    salert('确定修改？', function (choose) {
+                        if (choose) {
+                            index.editRedis();
+                        }
+                    });
                     break;
                 case 'format':
                     index.toggleFormat(this);
@@ -303,11 +311,9 @@ var index = {
             var str = JSON.stringify(obj, undefined, 2);
             $('#text_value').val(str);
             index.format = true;
-            btn.value = "恢复格式";
         } else {
-            index.getValue($('#input_key').val());
+            index.getValue($('#input_key').val(),$('#input_hkey').val());
             index.format = false;
-            btn.value = "格式化JSON";
         }
 
     };
