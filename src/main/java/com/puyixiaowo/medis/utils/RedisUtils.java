@@ -199,4 +199,22 @@ public class RedisUtils {
         }
     }
 
+    public static Long hdel(Integer dbIndex, String key, String hkey) {
+
+        try (Jedis jedis = getJedis(dbIndex)) {
+            return jedis.hdel(key, hkey);
+        }
+    }
+
+    public static String hget(int dbIndex, String key, String hkey) {
+        try (Jedis jedis = getJedis(dbIndex)) {
+            return jedis.hget(key, hkey);
+        }
+    }
+
+    public static Long hset(Integer dbIndex, String key, String hkey, String value) {
+        try (Jedis jedis = getJedis(dbIndex)) {
+            return jedis.hset(key, hkey, value);
+        }
+    }
 }

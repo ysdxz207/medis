@@ -7,6 +7,7 @@ import com.puyixiaowo.medis.bean.RedisCountBean;
 import com.puyixiaowo.medis.freemarker.FreeMarkerTemplateEngine;
 import com.puyixiaowo.medis.utils.ConfigUtils;
 import com.puyixiaowo.medis.utils.RedisUtils;
+import com.puyixiaowo.medis.utils.StringUtils;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
@@ -47,11 +48,16 @@ public class IndexController {
     public static String redisGet(Request request, Response response) {
         Integer db = Integer.valueOf(request.queryParams("db"));
         String key = request.queryParams("key");
+        String hkey = request.queryParams("hkey");
         String result = "";
         try {
             result = RedisUtils.get(db, key);
         } catch (Exception e) {
-            result = JSON.toJSONString(RedisUtils.hvals(db, key));
+            if (StringUtils.isBlank(hkey)) {
+                result = JSON.toJSONString(RedisUtils.hvals(db, key));
+            } else {
+                result = RedisUtils.hget(db, key, hkey);
+            }
         }
         return result;
     }
@@ -71,16 +77,29 @@ public class IndexController {
     }
 
     public static Object redisDelete(Request request, Response response) {
-        return RedisUtils.delete(Integer.valueOf(request.queryParams("db")),
-                request.queryParams("key"));
+        Integer db = Integer.valueOf(request.queryParams("db"));
+        String key = request.queryParams("key");
+        String hkey = request.queryParams("hkey");
+        if (StringUtils.isBlank(hkey)) {
+            return RedisUtils.delete(db, key);
+        }
+
+        return RedisUtils.hdel(db, key, hkey);
     }
 
-    public static Object editDelete(Request request, Response response) {
+    public static Object redisEdit(Request request, Response response) {
+        Integer db = Integer.valueOf(request.queryParams("db"));
+        String key = request.queryParams("key");
+        String hkey = request.queryParams("hkey");
+        String value = request.queryParams("value");
+
         boolean success = false;
         try {
-            RedisUtils.set(Integer.valueOf(request.queryParams("db")),
-                    request.queryParams("key"),
-                    request.queryParams("value"));
+            if (StringUtils.isBlank(hkey)) {
+                RedisUtils.set(db, key, value);
+            } else {
+                RedisUtils.hset(db, key, hkey, value);
+            }
         } catch (Exception e) {
             success = false;
         }
