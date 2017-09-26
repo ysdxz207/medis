@@ -48,11 +48,9 @@ var index = {
             return;
         }
         $('#text_value').val('');
+        $('#input_key').val(key==undefined?'':key);
+        $('#input_hkey').val(hkey==undefined?'':hkey);
         $.get(index.base + '/redis/get', {db: index.$selectDB.val(), key: key, hkey:hkey}, function (data) {
-            $('#input_key').val(key);
-            if (hkey) {
-                $('#input_h_key').val(hkey);
-            }
             $('#text_value').val(data);
         })
     };
