@@ -12,8 +12,7 @@ import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class IndexController {
 
@@ -70,21 +69,34 @@ public class IndexController {
      * @return
      */
     public static String redisKeys(Request request, Response response) {
-
-        return JSON.toJSONString(RedisUtils
+        Set<String> keys = RedisUtils
                 .keys(Integer.parseInt(request.queryParams("db")),
-                        request.queryParams("key")));
+                        request.queryParams("key"));
+
+        if (keys.size() > 200) {
+            List<String> list = new ArrayList(keys);
+            list = list.subList(0, 199);
+            return JSON.toJSONString(list);
+        }
+        return JSON.toJSONString(keys);
     }
 
     public static Object redisDelete(Request request, Response response) {
+        boolean success = true;
         Integer db = Integer.valueOf(request.queryParams("db"));
         String key = request.queryParams("key");
         String hkey = request.queryParams("hkey");
-        if (StringUtils.isBlank(hkey)) {
-            return RedisUtils.delete(db, key);
+        try {
+            if (StringUtils.isBlank(hkey)) {
+                RedisUtils.delete(db, key);
+            } else {
+                RedisUtils.hdel(db, key, hkey);
+            }
+        } catch (Exception e) {
+            success = false;
         }
 
-        return RedisUtils.hdel(db, key, hkey);
+        return success;
     }
 
     public static Object redisEdit(Request request, Response response) {
@@ -93,7 +105,7 @@ public class IndexController {
         String hkey = request.queryParams("hkey");
         String value = request.queryParams("value");
 
-        boolean success = false;
+        boolean success = true;
         try {
             if (StringUtils.isBlank(hkey)) {
                 RedisUtils.set(db, key, value);

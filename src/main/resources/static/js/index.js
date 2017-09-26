@@ -91,30 +91,27 @@ var index = {
     index.deleteRedis = function (key, hkey) {
 
         $.get(index.base + '/redis/delete', {db: index.$selectDB.val(), key: key, hkey: hkey}, function (data) {
-            if (data > 0) {
+            if (data) {
                 salert('删除成功');
             } else {
                 salert('删除失败');
             }
-        })
+        },'json')
     };
 
 
     /**
      * 修改或添加
      */
-    index.editRedis = function () {
+    index.editRedis = function (key, hkey, value) {
 
-        var key = $('#input_key').val(),
-            hkey = $('#input_hkey').val(),
-            value = $('#text_value').val();
         $.get(index.base + '/redis/edit', {db: index.$selectDB.val(), key: key, hkey: hkey, value: value}, function (data) {
             if (data) {
                 salert('修改成功');
             } else {
                 salert('修改失败');
             }
-        })
+        },'json')
     };
 
 
@@ -135,6 +132,15 @@ var index = {
 
         });
 
+        //key绑定事件
+        $('#input_key').keyup(function (event) {
+            if (event.keyCode == 13) {
+                var key = $('#input_key').val();
+                index.getValue(key);
+            }
+
+        });
+
         //hkey绑定事件
         $('#input_hkey').keyup(function (event) {
             if (event.keyCode == 13) {
@@ -147,18 +153,22 @@ var index = {
 
         //key操作
         $('#select_operation').on('change', function () {
+            var key = $('#input_key').val(),
+                hkey = $('#input_hkey').val(),
+                value = $('#text_value').val();
+
             switch (this.value) {
                 case 'delete':
                     salert('确定删除？', function (choose) {
                         if (choose) {
-                            index.deleteRedis($('#input_key').val())
+                            index.deleteRedis(key)
                         }
                     });
                     break;
                 case 'edit':
                     salert('确定修改？', function (choose) {
                         if (choose) {
-                            index.editRedis();
+                            index.editRedis(key, null, value);
                         }
                     });
                     break;
@@ -173,7 +183,8 @@ var index = {
         //hkey操作
         $('#select_h_operation').on('change', function () {
             var key = $('#input_key').val(),
-                hkey = $('#input_hkey').val();
+                hkey = $('#input_hkey').val(),
+                value = $('#text_value').val();
             switch (this.value) {
                 case 'query':
                     index.getValue(key, hkey);
@@ -188,7 +199,7 @@ var index = {
                 case 'edit':
                     salert('确定修改？', function (choose) {
                         if (choose) {
-                            index.editRedis();
+                            index.editRedis(key, hkey, value);
                         }
                     });
                     break;
@@ -298,6 +309,11 @@ var index = {
         $.get(index.base + "/redis/count", function (data) {
             if (data) {
                 index.$selectDB.empty();
+                if (data.length == 0) {
+                    var $option = $('<option value="0">db0&nbsp;&nbsp;&nbsp;&nbsp;key数量:0</option>');
+                    index.$selectDB.append($option);
+                    return;
+                }
                 $.each(data, function (i, count) {
                     var $option = $('<option value="' + count.name.replace(/[^0-9]/ig, "") + '">'
                         + count.name + '&nbsp;&nbsp;&nbsp;&nbsp;key数量:'
