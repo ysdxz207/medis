@@ -372,11 +372,16 @@ var index = {
     };
 
     index.exit = function () {
-        $.get(index.base + "/exit", function (data) {
-            if (data) {
-
+        $.ajax({
+            url: index.base + "/exit",
+            type: 'GET',
+            success: function(data){
+                salert("退出失败！");
+            },
+            error: function(data) {
+                window.close();
             }
-        }, 'json');
+        });
     };
 
     index.init = function () {
