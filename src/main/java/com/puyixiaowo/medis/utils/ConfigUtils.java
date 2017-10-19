@@ -13,7 +13,7 @@ import java.io.IOException;
  * 
  */
 public class ConfigUtils {
-    public static final String BASE_PATH = System.getProperty("user.dir");
+    public static final String BASE_PATH = getRealPath();
     public static final String REDIS_CONF = BASE_PATH + "/conf/redis.json";
     public static final String TAGS = BASE_PATH + "/conf/tags.json";
 
@@ -60,5 +60,29 @@ public class ConfigUtils {
 
     public static void saveTags(String str) {
         FileUtils.writeFile(TAGS, str);
+    }
+
+    public static String getRealPath() {
+
+        String realPath = ConfigUtils.class.getClassLoader().getResource("").getFile();
+
+        java.io.File file = new java.io.File(realPath);
+
+        realPath = file.getAbsolutePath();
+
+        try {
+
+            realPath = java.net.URLDecoder.decode(realPath, "utf-8");
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        }
+
+
+
+        return realPath;
+
     }
 }
