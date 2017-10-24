@@ -53,7 +53,11 @@ public class IndexController {
             result = RedisUtils.get(db, key);
         } catch (Exception e) {
             if (StringUtils.isBlank(hkey)) {
-                result = JSON.toJSONString(RedisUtils.hvals(db, key));
+                List<String> stringList = RedisUtils.hvals(db, key);
+                if (stringList.size() > 200) {
+                    stringList = stringList.subList(0, 200);
+                }
+                result = JSON.toJSONString(stringList);
             } else {
                 result = RedisUtils.hget(db, key, hkey);
             }
