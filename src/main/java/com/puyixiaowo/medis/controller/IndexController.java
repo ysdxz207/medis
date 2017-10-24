@@ -58,7 +58,7 @@ public class IndexController {
                 result = RedisUtils.hget(db, key, hkey);
             }
         }
-        return result;
+        return result == null ? "" : result;
     }
 
     /**
