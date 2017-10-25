@@ -51,8 +51,9 @@ var index = {
         $('#input_key').val(key==undefined?'':key);
         $('#input_hkey').val(hkey==undefined?'':hkey);
         $.get(index.base + '/redis/get', {db: index.$selectDB.val(), key: key, hkey:hkey}, function (data) {
-            $('#text_value').val(data);
-        })
+            $('#text_value').val(data.result);
+            $('#hash_value_count').text(data.count ? data.count : 0);
+        }, "json")
     };
 
     /**

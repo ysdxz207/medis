@@ -45,6 +45,7 @@ public class IndexController {
      * @return
      */
     public static String redisGet(Request request, Response response) {
+        JSONObject json = new JSONObject();
         Integer db = Integer.valueOf(request.queryParams("db"));
         String key = request.queryParams("key");
         String hkey = request.queryParams("hkey");
@@ -54,6 +55,7 @@ public class IndexController {
         } catch (Exception e) {
             if (StringUtils.isBlank(hkey)) {
                 List<String> stringList = RedisUtils.hvals(db, key);
+                json.put("count", stringList.size());
                 if (stringList.size() > 200) {
                     stringList = stringList.subList(0, 200);
                 }
@@ -62,7 +64,9 @@ public class IndexController {
                 result = RedisUtils.hget(db, key, hkey);
             }
         }
-        return result == null ? "" : result;
+
+        json.put("result", result == null ? "" : result);
+        return json.toJSONString();
     }
 
     /**
