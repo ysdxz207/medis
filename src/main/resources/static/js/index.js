@@ -68,12 +68,14 @@ var index = {
         }
 
         var $list = $('#list_key');
+        var $count_keys = $('#count_keys');
         $.get(index.base + "/redis/keys", {
             db: index.$selectDB.val(),
             key: key
         }, function (data) {
             $list.empty();
-            $.each(data, function (i, value) {
+            $count_keys.text(data.count ? data.count : 0);
+            $.each(data.result, function (i, value) {
                 var $tr = $('<li style="cursor: pointer">' + value + '</li>').on('click', function () {
                     index.getValue(value);
                 });

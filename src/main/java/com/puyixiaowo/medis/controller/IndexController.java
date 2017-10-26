@@ -77,16 +77,18 @@ public class IndexController {
      * @return
      */
     public static String redisKeys(Request request, Response response) {
+        JSONObject json = new JSONObject();
         Set<String> keys = RedisUtils
                 .keys(Integer.parseInt(request.queryParams("db")),
                         request.queryParams("key"));
 
+        List<String> list = new ArrayList(keys);
+        json.put("count", keys.size());
         if (keys.size() > 200) {
-            List<String> list = new ArrayList(keys);
             list = list.subList(0, 199);
-            return JSON.toJSONString(list);
         }
-        return JSON.toJSONString(keys);
+        json.put("result", list);
+        return json.toJSONString();
     }
 
     public static Object redisDelete(Request request, Response response) {
