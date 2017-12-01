@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.puyixiaowo.medis.freemarker.FreeMarkerTemplateEngine;
 import com.puyixiaowo.medis.utils.ConfigUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
@@ -12,6 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TagController {
+
+    private static final Logger logger = LoggerFactory.getLogger(TagController.class);
 
     /**
      * 获取标签列表
@@ -86,6 +90,7 @@ public class TagController {
                 }
                 return false;
             } catch (Exception e) {
+                logger.error("删除标签异常：" + e.getMessage());
                 return false;
             }
     }

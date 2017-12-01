@@ -8,6 +8,8 @@ import com.puyixiaowo.medis.freemarker.FreeMarkerTemplateEngine;
 import com.puyixiaowo.medis.utils.ConfigUtils;
 import com.puyixiaowo.medis.utils.RedisUtils;
 import com.puyixiaowo.medis.utils.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
@@ -15,6 +17,8 @@ import spark.Response;
 import java.util.*;
 
 public class IndexController {
+
+    private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
 
     /**
      * 首页
@@ -108,6 +112,7 @@ public class IndexController {
             }
         } catch (Exception e) {
             success = false;
+            logger.error("删除异常：" + e.getMessage());
         }
 
         return success;
@@ -128,6 +133,7 @@ public class IndexController {
             }
         } catch (Exception e) {
             success = false;
+            logger.error("修改值异常：" + e.getMessage());
         }
         return success;
     }
@@ -177,6 +183,7 @@ public class IndexController {
             }
             return false;
         } catch (Exception e) {
+            logger.error("删除配置异常：" + e.getMessage());
             return false;
         }
 
