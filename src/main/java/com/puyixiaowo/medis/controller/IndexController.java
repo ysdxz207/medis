@@ -53,10 +53,21 @@ public class IndexController {
         Integer db = Integer.valueOf(request.queryParams("db"));
         String key = request.queryParams("key");
         String hkey = request.queryParams("hkey");
+        /**
+         * 0、key，1、hkey
+         */
+        int type = Integer.valueOf(request.queryParamOrDefault("type", "0"));
+
         String result = "";
-        try {
-            result = RedisUtils.get(db, key);
-        } catch (Exception e) {
+
+        if (type == 0) {
+            try {
+                result = RedisUtils.get(db, key);
+            } catch (Exception e) {
+                type = 1;
+            }
+
+        } else if (type == 1) {
             if (StringUtils.isBlank(hkey)) {
                 List<JSONObject> jsonList = new ArrayList<>();
                 List<String> stringList = RedisUtils.hvals(db, key);

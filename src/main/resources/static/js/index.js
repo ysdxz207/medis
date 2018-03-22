@@ -41,7 +41,7 @@ var index = {
      * 获取值
      * @param key
      */
-    index.getValue = function (key, hkey) {
+    index.getValue = function (type, key, hkey) {
         var msg = index.validateFail();
         if (msg) {
             salert(msg);
@@ -50,7 +50,7 @@ var index = {
         $('#text_value').val('');
         $('#input_key').val(key==undefined?'':key);
         $('#input_hkey').val(hkey==undefined?'':hkey);
-        $.get(index.base + '/redis/get', {db: index.$selectDB.val(), key: key, hkey:hkey}, function (data) {
+        $.get(index.base + '/redis/get', {type: type, db: index.$selectDB.val(), key: key, hkey:hkey}, function (data) {
             $('#text_value').val(data.result);
             $('#hash_value_count').text(data.count ? data.count : 0);
         }, "json")
@@ -77,7 +77,7 @@ var index = {
             $count_keys.text(data.count ? data.count : 0);
             $.each(data.result, function (i, value) {
                 var $tr = $('<li style="cursor: pointer">' + value + '</li>').on('click', function () {
-                    index.getValue(value);
+                    index.getValue(0, value);
                 });
                 $list.append($tr);
             })
@@ -137,7 +137,7 @@ var index = {
         $('#input_key').keyup(function (event) {
             if (event.keyCode == 13) {
                 var key = $('#input_key').val();
-                index.getValue(key);
+                index.getValue(0, key);
             }
 
         });
@@ -147,7 +147,7 @@ var index = {
             if (event.keyCode == 13) {
                 var key = $('#input_key').val(),
                     hkey = $('#input_hkey').val();
-                index.getValue(key, hkey);
+                index.getValue(1, key, hkey);
             }
 
         });
@@ -174,7 +174,7 @@ var index = {
                     });
                     break;
                 case 'format':
-                    index.toggleFormat(this);
+                    index.toggleFormat(0, this);
                     break;
             }
 
@@ -188,7 +188,7 @@ var index = {
                 value = $('#text_value').val();
             switch (this.value) {
                 case 'query':
-                    index.getValue(key, hkey);
+                    index.getValue(1, key, hkey);
                     break;
                 case 'delete':
                     salert('确定删除？', function (choose) {
@@ -205,7 +205,7 @@ var index = {
                     });
                     break;
                 case 'format':
-                    index.toggleFormat(this);
+                    index.toggleFormat(1, this);
                     break;
             }
 
@@ -325,7 +325,7 @@ var index = {
         }, 'json');
     };
 
-    index.toggleFormat = function (btn) {
+    index.toggleFormat = function (type, btn) {
         if (!index.format) {
             var strJson = $('#text_value').val();
             if (!strJson) {
@@ -336,7 +336,7 @@ var index = {
             $('#text_value').val(str);
             index.format = true;
         } else {
-            index.getValue($('#input_key').val(),$('#input_hkey').val());
+            index.getValue(type, $('#input_key').val(),$('#input_hkey').val());
             index.format = false;
         }
 
