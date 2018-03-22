@@ -89,13 +89,13 @@ var index = {
      * 删除
      * @param key
      */
-    index.deleteRedis = function (key, hkey) {
+    index.deleteRedis = function (type, key, hkey) {
 
-        $.get(index.base + '/redis/delete', {db: index.$selectDB.val(), key: key, hkey: hkey}, function (data) {
-            if (data) {
+        $.get(index.base + '/redis/delete', {type: type, db: index.$selectDB.val(), key: key, hkey: hkey}, function (data) {
+            if (data.status) {
                 salert('删除成功');
             } else {
-                salert('删除失败');
+                salert('删除失败:' + data.msg);
             }
         },'json')
     };
@@ -106,7 +106,7 @@ var index = {
      */
     index.editRedis = function (key, hkey, value) {
 
-        $.get(index.base + '/redis/edit', {db: index.$selectDB.val(), key: key, hkey: hkey, value: value}, function (data) {
+        $.post(index.base + '/redis/edit', {db: index.$selectDB.val(), key: key, hkey: hkey, value: value}, function (data) {
             if (data) {
                 salert('修改成功');
             } else {
@@ -162,7 +162,7 @@ var index = {
                 case 'delete':
                     salert('确定删除？', function (choose) {
                         if (choose) {
-                            index.deleteRedis(key)
+                            index.deleteRedis(0, key)
                         }
                     });
                     break;
@@ -193,7 +193,7 @@ var index = {
                 case 'delete':
                     salert('确定删除？', function (choose) {
                         if (choose) {
-                            index.deleteRedis(key, hkey)
+                            index.deleteRedis(1, key, hkey)
                         }
                     });
                     break;

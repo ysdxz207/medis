@@ -100,10 +100,23 @@ public class IndexController {
     }
 
     public static Object redisDelete(Request request, Response response) {
+
+        JSONObject json = new JSONObject();
+        json.put("status", false);
         boolean success = true;
         Integer db = Integer.valueOf(request.queryParams("db"));
         String key = request.queryParams("key");
         String hkey = request.queryParams("hkey");
+        /**
+         * 0、key，1、hkey
+         */
+        int type = Integer.valueOf(request.queryParamOrDefault("type", "0"));
+
+        if (type == 1
+                && StringUtils.isBlank(hkey)) {
+            json.put("msg", "hkey为空");
+            return json;
+        }
         try {
             if (StringUtils.isBlank(hkey)) {
                 RedisUtils.delete(db, key);
@@ -112,10 +125,12 @@ public class IndexController {
             }
         } catch (Exception e) {
             success = false;
+            json.put("msg", e.getMessage() == null ? JSON.toJSONString(e) : e.getMessage());
             logger.error("删除异常：" + e.getMessage());
         }
 
-        return success;
+        json.put("status", success);
+        return json;
     }
 
     public static Object redisEdit(Request request, Response response) {
