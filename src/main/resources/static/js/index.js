@@ -107,10 +107,10 @@ var index = {
     index.editRedis = function (key, hkey, value) {
 
         $.post(index.base + '/redis/edit', {db: index.$selectDB.val(), key: key, hkey: hkey, value: value}, function (data) {
-            if (data) {
+            if (data.status) {
                 salert('修改成功');
             } else {
-                salert('修改失败');
+                salert(data.msg);
             }
         },'json')
     };

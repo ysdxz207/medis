@@ -64,28 +64,37 @@ public class IndexController {
             try {
                 result = RedisUtils.get(db, key);
             } catch (Exception e) {
-                type = 1;
+                result = getByHkey(db, key, hkey, json);
             }
 
         } else if (type == 1) {
-            if (StringUtils.isBlank(hkey)) {
-                List<JSONObject> jsonList = new ArrayList<>();
-                List<String> stringList = RedisUtils.hvals(db, key);
-                json.put("count", stringList.size());
-                if (stringList.size() > 200) {
-                    stringList = stringList.subList(0, 200);
-                }
-                for (String jsonStr : stringList) {
-                    jsonList.add(JSON.parseObject(jsonStr));
-                }
-                result = JSON.toJSONString(jsonList);
-            } else {
-                result = RedisUtils.hget(db, key, hkey);
-            }
+            result = getByHkey(db, key, hkey, json);
         }
 
         json.put("result", result == null ? "" : result);
         return json.toJSONString();
+    }
+
+    private static String getByHkey(Integer db,
+                                    String key, String hkey,
+                                    JSONObject json) {
+        String result = "";
+        if (StringUtils.isBlank(hkey)) {
+            List<JSONObject> jsonList = new ArrayList<>();
+            List<String> stringList = RedisUtils.hvals(db, key);
+            json.put("count", stringList.size());
+            if (stringList.size() > 200) {
+                stringList = stringList.subList(0, 200);
+            }
+            for (String jsonStr : stringList) {
+                jsonList.add(JSON.parseObject(jsonStr));
+            }
+            result = JSON.toJSONString(jsonList);
+        } else {
+            result = RedisUtils.hget(db, key, hkey);
+        }
+
+        return result;
     }
 
     /**
@@ -150,6 +159,9 @@ public class IndexController {
         String hkey = request.queryParams("hkey");
         String value = request.queryParams("value");
 
+        JSONObject json = new JSONObject();
+        json.put("status", true);
+
         boolean success = true;
         try {
             if (StringUtils.isBlank(hkey)) {
@@ -160,8 +172,11 @@ public class IndexController {
         } catch (Exception e) {
             success = false;
             logger.error("修改值异常：" + e.getMessage());
+            json.put("msg", "修改值异常：" + e.getMessage());
         }
-        return success;
+
+        json.put("status", success);
+        return json;
     }
 
     public static Object saveConfAndConnect(Request request, Response response) {
